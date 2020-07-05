@@ -1,30 +1,36 @@
 import cv2
+import numpy as np
 
-### function image resize
-
-img = cv2.imread("trump.png")
-
-# To find size of image we use shape function (486,360,3) (height,width,no of color channel)
+###Shapes and Text
+#How to draw shapes and text on image
+# np.zeros((512,512)) black image
+#creating image
+img = np.zeros((512,512,3),np.uint8)
 print(img.shape)
 
-#image , (width,height for resize)
-imgResize = cv2.resize(img,(300,200))
-print(imgResize.shape)
+#making image color blue
+#img[:] whole image
+#img[0:200,200:300] specific part of image
+img[:] = 255,0,0
 
-#similar you can increase the number of pixels but it wont increase quality of image
-imgResize2 = cv2.resize(img,(1000,500))
-print(imgResize2.shape)
+#Draw Line
+#Line (img,startPoint,endPoint,colorOfLine,thickness)
+#cv2.line(img,(0,0),(300,300),(0,255,0),3)
+
+#img.shape[1] => width of image img.shape[0] => height of image
+cv2.line(img,(0,0),(img.shape[1],img.shape[0]),(0,255,0),3)
+
+#Draw Rectangle (img,startPoint,endPoint,color of rect,thickness of line)
+#cv2.rectangle(img,(0,0),(200,200),(0,0,255),2)
+
+#Fill rectangle
+cv2.rectangle(img,(0,0),(200,200),(0,0,255),cv2.FILLED)
+
+#Draw Circle (img,centerPoint,radius,color,thickness)
+cv2.circle(img,(250,250),20,(0,0,255),1)
+
+###Put Text of image (img,text,originPoint,font Style,scale,color,thickness)
+cv2.putText(img,"Hello world",(300,100),cv2.FONT_HERSHEY_COMPLEX,2.5,(0,0,255),5)
 
 cv2.imshow("image",img)
-cv2.imshow("image Resize",imgResize)
-cv2.imshow("image Resize2",imgResize2)
-
-
-###Cropping image
-#So image itself is a array of pixels  , height comes first and then width opencv width comes first and then height
-#0 to 200 pixels [0:200]
-imgCropped = img[0:200,200:300]
-cv2.imshow("image cropped",imgCropped)
-
-
 cv2.waitKey(0)
