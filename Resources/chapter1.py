@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
 
-###Joining images
-#Lot of images in 1 window
+###Color detection
 
+
+def empty(a):
+    pass
 def stackImages(scale,imgArray):
     rows = len(imgArray)
     cols = len(imgArray[0])
@@ -35,20 +37,44 @@ def stackImages(scale,imgArray):
         ver = hor
     return ver
 
+cv2.namedWindow("trackBars")
+cv2.resizeWindow("trackBars",640,240)
+#name of window,add on which window,initial value, max value, function executed when trak bar value is changed
+#Hue ranges from 0 to 255 but opencv supports still 179 so max value 179
+cv2.createTrackbar("Hue Min","trackBars",0,179,empty)
+cv2.createTrackbar("Hue Max","trackBars",13,179,empty)
+cv2.createTrackbar("Sat Min","trackBars",24,255,empty)
+cv2.createTrackbar("Sat Max","trackBars",250,255,empty)
+cv2.createTrackbar("Value Min","trackBars",119,255,empty)
+cv2.createTrackbar("Value Max","trackBars",255,255,empty)
 
-img = cv2.imread("trump.png")
+while True:
+    img = cv2.imread("lambo.png")
+    imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    #trackbar name, window name is which it belongs
+    h_min = cv2.getTrackbarPos("Hue Min","trackBars")
+    h_max = cv2.getTrackbarPos("Hue Max","trackBars")
+    s_min = cv2.getTrackbarPos("Sat Min","trackBars")
+    s_max = cv2.getTrackbarPos("Sat Max","trackBars")
+    v_min = cv2.getTrackbarPos("Value Min","trackBars")
+    v_max = cv2.getTrackbarPos("Value Max","trackBars")
+    print(h_min,h_max,s_min,s_max,v_min,v_max)
 
-#numpy function
-#disadvantages of this method 1) we cant resize the image 2)if images do not have same number of channel which means they are nopt both rgb and may 1 of them is grey and 1 of them is rgb then it will not work both of them have to have same number of channelswe are talking about matrices
-#so we have function to tackle it
-hor = np.hstack((img,img))
-ver = np.vstack((img,img))
+    lower = np.array([h_min,s_min,v_min])
+    upper = np.array([h_max,s_max,v_max])
 
-grayImg = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    #creating a mask
+    mask = cv2.inRange(imgHSV,lower,upper)
+    #cv2.imshow("lambo ",img)
+    #cv2.imshow("lamboHSV ",imgHSV)
+    #cv2.imshow("mask  ", mask)
+    # keep things in black color if you dont want it
 
-imgStack = stackImages(0.5,([img,grayImg,img],[img,img,img]))
+    #which will add 2 images together to create a new image it will check both images and wherever the pixel are both present it will take it has a yes or a 1  and it will store that in new image
+    # cv2.bitwise_and(img,img,mask=mask)   source image,output image, mask
+    imgResult = cv2.bitwise_and(img,img,mask=mask)
+    #cv2.imshow("Result masked image  ", imgResult)
 
-cv2.imshow("Horizontal",hor)
-cv2.imshow("Vertical",ver)
-cv2.imshow("Image Stack",imgStack)
-cv2.waitKey(0)
+    imgStack = stackImages(0.6,([img,imgHSV],[mask,imgResult]))
+    cv2.imshow("Stack Images",imgStack)
+    cv2.waitKey(1)
