@@ -1,35 +1,30 @@
 import cv2
-import numpy as np
 
-#functions
+### function image resize
 
 img = cv2.imread("trump.png")
 
-#GrayScale Image  cvtColor basically converts your image to different colors
-#in openCV color channel are bgr
-imgGray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+# To find size of image we use shape function (486,360,3) (height,width,no of color channel)
+print(img.shape)
 
-#blur
-imgBlur = cv2.GaussianBlur(imgGray,(7,7),0)
+#image , (width,height for resize)
+imgResize = cv2.resize(img,(300,200))
+print(imgResize.shape)
 
-#edge detector we are using canny  . we can increase the value of threshold to decrease the edges displayed
-imgCanny = cv2.Canny(img,150,200)
+#similar you can increase the number of pixels but it wont increase quality of image
+imgResize2 = cv2.resize(img,(1000,500))
+print(imgResize2.shape)
 
-#dilation:- Now sometime we detecting a edge but because there is a gap or its not joint properly it doesnt detect it has a proper lineso what we can do is increase the thickness of edge
+cv2.imshow("image",img)
+cv2.imshow("image Resize",imgResize)
+cv2.imshow("image Resize2",imgResize2)
 
-#numpy is a library to deal with matrices
-#np.ones we need  all the values to be ones and kernel size (5,5) 5x5 and type of object np.unit8 which means value can range from 0 to 255
-kernel = np.ones((5,5),np.uint8)
-#has we are dealing with edges we will use canny Image , kernel requires a matrix
-#how many iteration we want our kernel to move around which means how much thickness do we want
-imgDilation = cv2.dilate(imgCanny,kernel,iterations=2)
 
-#opposite of dilation which is erosion to make edges thinner
-imgEroded = cv2.erode(imgDilation,kernel,iterations=1)
+###Cropping image
+#So image itself is a array of pixels  , height comes first and then width opencv width comes first and then height
+#0 to 200 pixels [0:200]
+imgCropped = img[0:200,200:300]
+cv2.imshow("image cropped",imgCropped)
 
-cv2.imshow("Gray Image",imgGray)
-cv2.imshow("Blur Image",imgBlur)
-cv2.imshow("Canny Image",imgCanny)
-cv2.imshow("Dilation Image",imgDilation)
-cv2.imshow("Eroded Image",imgEroded)
+
 cv2.waitKey(0)
